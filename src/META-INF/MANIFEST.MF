@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: read_cdd_blast_and_calc_non_overlap
+

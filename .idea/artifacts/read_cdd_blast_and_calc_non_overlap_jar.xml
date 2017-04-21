@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="read_cdd_blast_and_calc_non_overlap:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/read_cdd_blast_and_calc_non_overlap_jar</output-path>
+    <root id="archive" name="read_cdd_blast_and_calc_non_overlap.jar">
+      <element id="module-output" name="read_cdd_blast_and_calc_non_overlap" />
+    </root>
+  </artifact>
+</component>
