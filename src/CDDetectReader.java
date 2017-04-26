@@ -11,7 +11,7 @@ import java.util.Map;
  *
  */
 public class CDDetectReader {
-    Map<String, List<int[]>> CDMap = new HashMap<String, List<int[]>>(10000000);
+    Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000000);
 
     public void initCDDetectReader(String filename) {
@@ -23,17 +23,19 @@ public class CDDetectReader {
             String sCurrentLine;
             br = new BufferedReader(new FileReader(filename));
             while ((sCurrentLine = br.readLine()) != null) {
-                List<int[]> currentList = new ArrayList<int[]>();
+                List<ConservedDomain> currentList = new ArrayList<ConservedDomain>();
                 String[] splits = sCurrentLine.split("\t");
                 try {
                     if (CDMap.get(splits[0]) != null) {
                         currentList = CDMap.get(splits[0]);
                     }
-                    if (fullGeneCD.containsKey(splits[7]) && !currentList.contains(new int[]{Integer.parseInt(splits[3]), Integer.parseInt(splits[4])})) {
-                        currentList.add(new int[]{Integer.parseInt(splits[4]), Integer.parseInt(splits[4])});
-                        CDMap.put(splits[0], currentList);
+                    ConservedDomain currentDomain = new ConservedDomain(splits[0]);
+                    currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
+                    if (fullGeneCD.containsKey(splits[7]) && currentDomain.isInList(currentList)){
+                        currentList.add(currentDomain);
+                        CDMap.put(currentDomain.getName(), currentList);
                     }
-                } catch (IllegalStateException ex) {
+                } catch (IllegalStateException ex){
                     ex.printStackTrace();
                     System.err.println("Wrong Format ... COL: 0 Protname; COL: 3 Alignment Start; COL: 4 Alignment End; COL: 7 CDname");
                     System.err.println(sCurrentLine);
@@ -55,41 +57,28 @@ public class CDDetectReader {
 
     public void calc_overlap() {
         for (String key : CDMap.keySet()) {
-            boolean fnd = false;
-            List<int[]> list = CDMap.get(key);
-            boolean[] hasNoOverlap = new boolean[list.size()];
-            for (int i = 0; i < list.size() - 1; i++) {
-                int[] ints1 = list.get(i);
-                for (int j = i + 1; j < list.size(); j++) {
-                    int[] ints2 = list.get(j);
-                    if ((ints1[0] > ints2[1] && ints1[1] > ints2[1]) || (ints2[0] > ints1[1] && ints2[1] > ints1[1])) {
-                        hasNoOverlap[i] = true;
-                        hasNoOverlap[j] = true;
-                        fnd = true;
-                    }
-                }
-            }
-            if (fnd) {
-                print_subset(key, list, hasNoOverlap);
+            List<ConservedDomain> list = CDMap.get(key);
+            if (ConservedDomain.calculateNonOverlaps(list)) {
+                print_subset(key, list);
             }
         }
     }
 
     public void print_set(String key) {
         String print = key + "\t";
-        for (int[] ints : CDMap.get(key)) {
-            if (!print.contains("(" + ints[0] + "," + ints[1] + ")")) {
-                print = print + "(" + ints[0] + "," + ints[1] + ")";
+        for (ConservedDomain domain : CDMap.get(key)) {
+            if (!print.contains("(" + domain.getStart() + "," + domain.getEnd() + ")")) {
+                print = print + "(" + domain.getStart() + "," + domain.getEnd() + ")";
             }
         }
         System.out.println(print);
     }
 
-    public void print_subset(String key, List<int[]> list, boolean[] hasNoOverlap) {
+    public void print_subset(String key, List<ConservedDomain> list) {
         String print = key + "\t";
-        for (int i = 0; i < list.size(); i++) {
-            if (hasNoOverlap[i] && !print.contains("(" + list.get(i)[0] + "," + list.get(i)[1] + ")")) {
-                print = print + "(" + list.get(i)[0] + "," + list.get(i)[1] + ")";
+        for (ConservedDomain domain : list) {
+            if (domain.nonOverlapping() && !print.contains("(" + domain.getStart() + "," + domain.getEnd() + ")")) {
+                print = print + "(" + domain.getStart() + "," + domain.getEnd() + ")";
             }
         }
         System.out.println(print);
@@ -119,6 +108,5 @@ public class CDDetectReader {
                 ex.printStackTrace();
             }
         }
-
     }
 }

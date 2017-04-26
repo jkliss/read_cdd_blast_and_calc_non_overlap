@@ -15,6 +15,5 @@ public class read_cdd_blast_and_calc_non_overlap {
         else {
             System.err.println("No File!\nUse one Argument for BLAST output as Input\nUse Two Arguments for only CD File + Full Gene File");
         }
-
     }
 }

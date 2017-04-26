@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  *
  */
 public class BlastReader {
-    Map<String, List<int[]>> blastMap = new HashMap<String, List<int[]>>(10000000);
+    Map<String, List<ConservedDomain>> blastMap = new HashMap<String, List<ConservedDomain>>(10000000);
 
     public BlastReader(String filename){
         BufferedReader br = null;
@@ -27,13 +27,15 @@ public class BlastReader {
             while ((sCurrentLine = br.readLine()) != null) {
                 Matcher match = pattern.matcher(sCurrentLine);
                 match.find();
-                List<int[]> currentList = new ArrayList<int[]>();
+                List<ConservedDomain> currentList = new ArrayList<ConservedDomain>();
                 try{
                     if(blastMap.get(match.group(1)) != null){
                         currentList = blastMap.get(match.group(1));
                     }
-                    if(!currentList.contains(new int[]{Integer.parseInt(match.group(2)), Integer.parseInt(match.group(3))})){
-                        currentList.add(new int[]{Integer.parseInt(match.group(2)), Integer.parseInt(match.group(3))});
+                    ConservedDomain currentDomain = new ConservedDomain(match.group(1));
+                    currentDomain.setStartAndEnd(Integer.parseInt(match.group(2)), Integer.parseInt(match.group(3)));
+                    if(!currentDomain.isInList(currentList)){
+                        currentList.add(currentDomain);
                         blastMap.put(match.group(1), currentList);
                         //System.out.println(match.group(1) + " " + match.group(2) + " " + match.group(3));
                     }
@@ -57,64 +59,32 @@ public class BlastReader {
         }
     }
 
-    public void calc_overlap(){
-        for (String key : blastMap.keySet()) {
-            boolean fnd = false;
-            List<int[]> list = blastMap.get(key);
-            boolean[] hasNoOverlap = new boolean[list.size()];
-            for(int i = 0; i < list.size()-1; i++){
-                int[] ints1 = list.get(i);
-                for(int j = i+1; j < list.size(); j++){
-                    int[] ints2 = list.get(j);
-                    if((ints1[0] > ints2[1] && ints1[1] > ints2[1] ) || (ints2[0] > ints1[1] && ints2[1] > ints1[1])){
-                        hasNoOverlap[i] = true;
-                        hasNoOverlap[j] = true;
-                        //System.out.println(ints1[0] + " " + ints2[1]);
-                        //print_set(key);
-                        fnd = true;
-                        //break;
-                    }
-                }
-                /*if(fnd){
-                    break;
-                }*/
-            }
-            if(fnd){
-                print_subset(key, list, hasNoOverlap);
-            }
-            /*
-            for (int[] ints1 : blastMap.get(key)) {
-                for (int[] ints2 : blastMap.get(key)) {
-                    if((ints1[0] > ints2[1] && ints1[1] > ints2[1] ) || (ints2[0] > ints1[1] && ints2[1] > ints1[1])){
-                        print_set(key);
-                        fnd = true;
-                        break;
-                    }
-                }
-                if(fnd){
-                    break;
-                }
-            }*/
-        }
-    }
-
-    public void print_set(String key){
+    public void print_set(String key) {
         String print = key + "\t";
-        for (int[] ints : blastMap.get(key)) {
-            if(!print.contains("(" + ints[0] + "," + ints[1] + ")")){
-                print = print + "(" + ints[0] + "," + ints[1] + ")";
+        for (ConservedDomain domain : blastMap.get(key)) {
+            if (!print.contains("(" + domain.getStart() + "," + domain.getEnd() + ")")) {
+                print = print + "(" + domain.getStart() + "," + domain.getEnd() + ")";
             }
         }
         System.out.println(print);
     }
 
-    public void print_subset(String key, List<int[]> list,boolean[] hasNoOverlap){
-            String print = key + "\t";
-            for (int i = 0; i < list.size(); i++) {
-                if(hasNoOverlap[i] && !print.contains("(" + list.get(i)[0] + "," + list.get(i)[1] + ")")){
-                    print = print + "(" + list.get(i)[0] + "," + list.get(i)[1] + ")";
-                }
+    public void calc_overlap(){
+        for (String key : blastMap.keySet()) {
+            List<ConservedDomain> list = blastMap.get(key);
+            if (ConservedDomain.calculateNonOverlaps(list)) {
+                print_subset(key, list);
             }
-            System.out.println(print);
+        }
+    }
+
+    public void print_subset(String key, List<ConservedDomain> list) {
+        String print = key + "\t";
+        for (ConservedDomain domain : list) {
+            if (domain.nonOverlapping() && !print.contains("(" + domain.getStart() + "," + domain.getEnd() + ")")) {
+                print = print + "(" + domain.getStart() + "," + domain.getEnd() + ")";
+            }
+        }
+        System.out.println(print);
     }
 }
