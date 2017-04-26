@@ -65,5 +65,6 @@ public class ConservedDomain {
 
     private void hasNonOverlap() {
         this.hasNonOverlap = true;
+        this.__overlapCalcDone = true;
     }
 }
