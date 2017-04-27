@@ -66,6 +66,8 @@ public class CDDetectReader {
             CDComparator cdComparator = new CDComparator();
             if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
+            } else {
+                CDMap.remove(key);
             }
         }
     }
