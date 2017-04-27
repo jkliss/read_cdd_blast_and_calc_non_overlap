@@ -1,12 +1,10 @@
 import java.util.List;
 
-/**
- * Created by students on 25.04.17.
- */
 public class ConservedDomain {
     int start = 0;
     int end = 0;
     String name = "";
+    Protein protein;
     boolean __overlapCalcDone;
     boolean hasNonOverlap = false;
 
@@ -47,24 +45,12 @@ public class ConservedDomain {
         return hasNonOverlap;
     }
 
-    public static boolean calculateNonOverlaps(List<ConservedDomain> list){
-        boolean fnd = false;
-        for (int i = 0; i < list.size() - 1; i++) {
-            ConservedDomain domain1 = list.get(i);
-            for (int j = i + 1; j < list.size(); j++) {
-                ConservedDomain domain2 = list.get(j);
-                if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getStart() && domain2.getEnd() > domain1.getEnd())) {
-                    domain1.hasNonOverlap();
-                    domain2.hasNonOverlap();
-                    fnd = true;
-                }
-            }
-        }
-        return fnd;
-    }
-
-    private void hasNonOverlap() {
+    public void setNonOverlap() {
         this.hasNonOverlap = true;
         this.__overlapCalcDone = true;
+    }
+
+    public void setProtein(Protein protein) {
+        this.protein = protein;
     }
 }

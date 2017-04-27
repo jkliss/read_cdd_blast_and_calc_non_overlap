@@ -13,6 +13,7 @@ import java.util.Map;
 public class CDDetectReader {
     Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000000);
+    Writer writer = new Writer("asdf.txt");
 
     public void initCDDetectReader(String filename) {
         BufferedReader br = null;
@@ -58,7 +59,8 @@ public class CDDetectReader {
     public void calc_overlap() {
         for (String key : CDMap.keySet()) {
             List<ConservedDomain> list = CDMap.get(key);
-            if (ConservedDomain.calculateNonOverlaps(list)) {
+            CDComparator cdComparator = new CDComparator();
+            if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
             }
         }
@@ -82,6 +84,7 @@ public class CDDetectReader {
             }
         }
         System.out.println(print);
+        writer.write(print);
     }
 
     public void setFullGeneCD(String filename) {
@@ -108,5 +111,9 @@ public class CDDetectReader {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public void close_writer(){
+        writer.close();
     }
 }

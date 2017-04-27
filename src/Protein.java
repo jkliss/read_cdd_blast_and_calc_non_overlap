@@ -26,4 +26,8 @@ public class Protein {
         }
         return false;
     }
+
+    public int getLength() {
+        return length;
+    }
 }

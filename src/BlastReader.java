@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
  */
 public class BlastReader {
     Map<String, List<ConservedDomain>> blastMap = new HashMap<String, List<ConservedDomain>>(10000000);
+    Writer writer = new Writer("ReadCDDBlastNonOverlap.output");
 
     public BlastReader(String filename){
         BufferedReader br = null;
@@ -72,7 +73,18 @@ public class BlastReader {
     public void calc_overlap(){
         for (String key : blastMap.keySet()) {
             List<ConservedDomain> list = blastMap.get(key);
-            if (ConservedDomain.calculateNonOverlaps(list)) {
+            CDComparator cdComparator = new CDComparator();
+            if (cdComparator.calculateNonOverlaps(list)) {
+                print_subset(key, list);
+            }
+        }
+    }
+
+    public void calc_overlap_with_size(){
+        for (String key : blastMap.keySet()) {
+            List<ConservedDomain> list = blastMap.get(key);
+            CDComparator cdComparator = new CDComparator();
+            if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
             }
         }
@@ -86,5 +98,10 @@ public class BlastReader {
             }
         }
         System.out.println(print);
+        writer.writeLine(print);
+    }
+
+    public void close_writer(){
+        writer.close();
     }
 }

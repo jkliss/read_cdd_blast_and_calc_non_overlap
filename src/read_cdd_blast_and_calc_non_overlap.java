@@ -6,7 +6,14 @@ public class read_cdd_blast_and_calc_non_overlap {
         if(args.length == 1){
             BlastReader breader = new BlastReader(args[0]);
             breader.calc_overlap();
-        } else if(args.length > 1){
+            breader.close_writer();
+        } else if(args.length == 2){
+            CDDetectReader cdReader = new CDDetectReader();
+            cdReader.setFullGeneCD(args[1]);
+            cdReader.initCDDetectReader(args[0]);
+            cdReader.calc_overlap();
+            cdReader.close_writer();
+        } else if(args.length == 3){
             CDDetectReader cdReader = new CDDetectReader();
             cdReader.setFullGeneCD(args[1]);
             cdReader.initCDDetectReader(args[0]);
