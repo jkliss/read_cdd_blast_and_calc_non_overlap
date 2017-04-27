@@ -1,15 +1,31 @@
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Created by students on 25.04.17.
+ */
 public class ConservedDomain {
     int start = 0;
     int end = 0;
     String name = "";
+    String cd_name;
     Protein protein;
     boolean __overlapCalcDone;
     boolean hasNonOverlap = false;
+    boolean inSizeSpec = false;
 
     public ConservedDomain(String name){
         this.name = name;
+    }
+
+    public ConservedDomain(Protein protein){
+        this.name = protein.getName();
+        this.protein = protein;
+    }
+
+    public ConservedDomain(String protein, String name_of_conserved_domain){
+        this.protein = new Protein(protein);
+        this.cd_name = name_of_conserved_domain;
     }
 
     public void setStartAndEnd(int start, int end) {
@@ -53,4 +69,10 @@ public class ConservedDomain {
     public void setProtein(Protein protein) {
         this.protein = protein;
     }
+
+    public void setInSizeSpec() {
+        this.inSizeSpec = true;
+    }
+
+
 }

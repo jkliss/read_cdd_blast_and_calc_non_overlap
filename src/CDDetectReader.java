@@ -12,9 +12,13 @@ import java.util.Map;
  */
 public class CDDetectReader {
     Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
+    SeqReader seqReader;
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000000);
     Writer writer = new Writer("asdf.txt");
 
+
+    // READS Complete File with conserved Domains
+    // INPUT IS THE OUTFILE OF bwrpls.pl?
     public void initCDDetectReader(String filename) {
         BufferedReader br = null;
         FileReader fr = null;
@@ -30,7 +34,7 @@ public class CDDetectReader {
                     if (CDMap.get(splits[0]) != null) {
                         currentList = CDMap.get(splits[0]);
                     }
-                    ConservedDomain currentDomain = new ConservedDomain(splits[0]);
+                    ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
                     currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
                     if (fullGeneCD.containsKey(splits[7]) && currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
@@ -87,6 +91,7 @@ public class CDDetectReader {
         writer.write(print);
     }
 
+    // INPUT IS A FILE WITH RECIPROCAL BLAST WITH QCOVS >= 90%
     public void setFullGeneCD(String filename) {
         BufferedReader br = null;
         FileReader fr = null;
@@ -115,5 +120,9 @@ public class CDDetectReader {
 
     public void close_writer(){
         writer.close();
+    }
+
+    public void setSeqReader(String filename) {
+        this.seqReader = new SeqReader(filename);
     }
 }

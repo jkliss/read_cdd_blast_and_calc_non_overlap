@@ -58,7 +58,15 @@ public class SeqReader {
         return seqMap.get(protName).getLength();
     }
 
-    public void addProtein(){
+    public Protein get(String proteinName){
+        return seqMap.get(proteinName);
+    }
 
+    public int getLength(String proteinName){
+        return seqMap.get(proteinName).getLength();
+    }
+
+    public Map<String, Protein> getSeqMap() {
+        return seqMap;
     }
 }

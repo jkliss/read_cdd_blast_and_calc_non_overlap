@@ -8,6 +8,10 @@ public class Protein {
     String seq;
     int length;
 
+    public Protein(String name){
+        this.name = name;
+    }
+
     public Protein(String name, String seq){
         this.name = name;
         this.seq = seq;

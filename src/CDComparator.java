@@ -29,17 +29,18 @@ public class CDComparator {
                 if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getStart() && domain2.getEnd() > domain1.getEnd())) {
                     domain1.setNonOverlap();
                     domain2.setNonOverlap();
-                    fnd = true;
+                    if(sizeComparison(domain1,domain2)){
+                        domain1.setInSizeSpec();
+                        domain2.setInSizeSpec();
+                        fnd = true;
+                    }
                 }
             }
         }
         return fnd;
     }
 
-    boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2){
-
-
-
+    boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2) {
 
         return false;
     }
