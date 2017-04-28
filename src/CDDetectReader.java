@@ -15,7 +15,6 @@ public class CDDetectReader {
     SeqReader seqReader;
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
     Writer writer = new Writer("CDDetectReader.output");
-    boolean sw = true;
 
     // READS Complete File with conserved Domains
     // INPUT IS THE OUTFILE OF bwrpls.pl?
@@ -36,11 +35,7 @@ public class CDDetectReader {
                     }
                     ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
                     currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
-                    if(sw){ // JUST FOR CHECKUP
-                        System.err.println(currentDomain.getName() + "," + currentDomain.getLength());
-                        sw = false;
-                    }
-                    if (fullGeneCD.containsKey(splits[7]) && currentDomain.isInList(currentList)){
+                    if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
                         CDMap.put(currentDomain.getName(), currentList);
                     }
@@ -71,8 +66,6 @@ public class CDDetectReader {
             CDComparator cdComparator = new CDComparator();
             if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
-            } else {
-                CDMap.remove(key);
             }
         }
     }
@@ -94,8 +87,8 @@ public class CDDetectReader {
                 print = print + "(" + domain.getStart() + "," + domain.getEnd() + ")";
             }
         }
-        System.out.println(print);
-        writer.write(print);
+        //System.out.println(print);
+        writer.writeLine(print);
     }
 
     // INPUT IS A FILE WITH RECIPROCAL BLAST WITH QCOVS >= 90%
@@ -138,8 +131,7 @@ public class CDDetectReader {
         for (String key : CDMap.keySet()) {
             List<ConservedDomain> domains = CDMap.get(key);
             for (ConservedDomain domain : domains) {
-                System.err.println("ASDF");
-                writer.writeLine(key + "\t" + domain.getName() + "\t" + domain.getLength());
+                writer.writeLine(key + "\t" + domain.getCd_name() + "\t" + domain.getLength());
             }
         }
         writer.flush();

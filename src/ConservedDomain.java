@@ -58,9 +58,9 @@ public class ConservedDomain {
     }
 
     public boolean nonOverlapping(){
-        if(!__overlapCalcDone){
+        /*if(!__overlapCalcDone){
             System.err.println("No Overlap Calculation done!");
-        }
+        }*/
         return hasNonOverlap;
     }
 
@@ -79,5 +79,9 @@ public class ConservedDomain {
 
     public int getLength() {
         return length;
+    }
+
+    public String getCd_name() {
+        return cd_name;
     }
 }
