@@ -13,9 +13,9 @@ import java.util.Map;
 public class CDDetectReader {
     Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
     SeqReader seqReader;
-    Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000000);
-    Writer writer = new Writer("asdf.txt");
-
+    Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
+    Writer writer = new Writer("CDDetectReader.output");
+    boolean sw = true;
 
     // READS Complete File with conserved Domains
     // INPUT IS THE OUTFILE OF bwrpls.pl?
@@ -34,6 +34,10 @@ public class CDDetectReader {
                     if (CDMap.get(splits[0]) != null) {
                         currentList = CDMap.get(splits[0]);
                     }
+                    if(sw){
+                        System.err.println(splits[0]);
+                        sw = false;
+                    }
                     ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
                     currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
                     if (fullGeneCD.containsKey(splits[7]) && currentDomain.isInList(currentList)){
@@ -46,6 +50,7 @@ public class CDDetectReader {
                     System.err.println(sCurrentLine);
                 }
             }
+            System.err.println("Size: " + CDMap.size());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -126,5 +131,17 @@ public class CDDetectReader {
 
     public void setSeqReader(String filename) {
         this.seqReader = new SeqReader(filename);
+    }
+
+    public void printCDs(){
+        System.err.println(CDMap.size());
+        for (String key : CDMap.keySet()) {
+            List<ConservedDomain> domains = CDMap.get(key);
+            for (ConservedDomain domain : domains) {
+                System.err.println("ASDF");
+                writer.writeLine(key + "\t" + domain.getName() + "\t" + domain.getLength());
+            }
+        }
+        writer.flush();
     }
 }

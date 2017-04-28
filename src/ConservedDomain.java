@@ -7,6 +7,7 @@ import java.util.Map;
 public class ConservedDomain {
     int start = 0;
     int end = 0;
+    int length = 0;
     String name = "";
     String cd_name;
     Protein protein;
@@ -19,8 +20,8 @@ public class ConservedDomain {
     }
 
     public ConservedDomain(Protein protein){
-        this.name = protein.getName();
         this.protein = protein;
+        this.name = protein.getName();
     }
 
     public ConservedDomain(String protein, String name_of_conserved_domain){
@@ -31,6 +32,7 @@ public class ConservedDomain {
     public void setStartAndEnd(int start, int end) {
         this.start = start;
         this.end = end;
+        this.length = end - start + 1;
     }
 
     public int getEnd() {
@@ -74,5 +76,7 @@ public class ConservedDomain {
         this.inSizeSpec = true;
     }
 
-
+    public int getLength() {
+        return length;
+    }
 }

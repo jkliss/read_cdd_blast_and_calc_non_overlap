@@ -34,4 +34,8 @@ public class Protein {
     public int getLength() {
         return length;
     }
+
+    public void removeSeq(){
+        seq = null;
+    }
 }

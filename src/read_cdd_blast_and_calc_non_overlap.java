@@ -1,6 +1,9 @@
+import java.util.Timer;
+
 /**
  * Created by students on 07.04.17.
  */
+
 public class read_cdd_blast_and_calc_non_overlap {
     public static void main(String[] args) {
         if(args.length == 1){
@@ -14,12 +17,23 @@ public class read_cdd_blast_and_calc_non_overlap {
             cdReader.calc_overlap();
             cdReader.close_writer();
         } else if(args.length == 3){
+            ElapsedTimer timer = new ElapsedTimer();
+            System.err.println("Detect Reader...");
             CDDetectReader cdReader = new CDDetectReader();
+            timer.elapsedFromLastStamp();
+            System.err.println("Set FullGeneCD...");
             cdReader.setFullGeneCD(args[1]);
+            timer.elapsedFromLastStamp();
+            System.err.println("InitCDDetectReader...");
             cdReader.initCDDetectReader(args[0]);
+            timer.elapsedFromLastStamp();
+            System.err.println("Calc Overlap...");
             cdReader.calc_overlap();
+            timer.elapsedFromLastStamp();
+            System.err.println("Seq Reader...");
             cdReader.setSeqReader(args[2]);
-            cdReader.close_writer();
+            timer.elapsedFromLastStamp();
+            cdReader.printCDs();
         }
         else {
             System.err.println("No File!\nUse one Argument for BLAST output as Input\nUse Two Arguments for only CD File + Full Gene File");

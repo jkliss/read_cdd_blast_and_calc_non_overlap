@@ -29,6 +29,7 @@ public class SeqReader {
                             Protein currentProtein = new Protein(currentHead, currentSeq);
                             seqMap.put(currentHead, currentProtein);
                         }
+                        currentSeq = "";
                         currentHead = sCurrentLine;
                     } else {
                         sCurrentLine = sCurrentLine.replace("\n", "");
@@ -68,5 +69,17 @@ public class SeqReader {
 
     public Map<String, Protein> getSeqMap() {
         return seqMap;
+    }
+
+    public void removeSeqsToSaveSpace(){
+        for (Protein protein : seqMap.values()) {
+            protein.removeSeq();
+        }
+    }
+
+    public void writeSeqLength(){
+        for (Protein protein : seqMap.values()) {
+            writer.writeLine(protein.getName() + "\t" + protein.getLength());
+        }
     }
 }

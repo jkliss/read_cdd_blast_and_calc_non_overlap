@@ -47,4 +47,12 @@ public class Writer {
             System.err.println("Writer could not be closed!");
         }
     }
+
+    public void flush(){
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
