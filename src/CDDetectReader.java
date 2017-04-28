@@ -34,12 +34,12 @@ public class CDDetectReader {
                     if (CDMap.get(splits[0]) != null) {
                         currentList = CDMap.get(splits[0]);
                     }
-                    if(sw){
-                        System.err.println(splits[0]);
-                        sw = false;
-                    }
                     ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
                     currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
+                    if(sw){ // JUST FOR CHECKUP
+                        System.err.println(currentDomain.getName() + "," + currentDomain.getLength());
+                        sw = false;
+                    }
                     if (fullGeneCD.containsKey(splits[7]) && currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
                         CDMap.put(currentDomain.getName(), currentList);

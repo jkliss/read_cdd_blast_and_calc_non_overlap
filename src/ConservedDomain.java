@@ -26,6 +26,7 @@ public class ConservedDomain {
 
     public ConservedDomain(String protein, String name_of_conserved_domain){
         this.protein = new Protein(protein);
+        this.name = this.protein.getName();
         this.cd_name = name_of_conserved_domain;
     }
 
