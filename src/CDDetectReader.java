@@ -64,10 +64,12 @@ public class CDDetectReader {
         for (String key : CDMap.keySet()) {
             List<ConservedDomain> list = CDMap.get(key);
             CDComparator cdComparator = new CDComparator();
+            cdComparator.setCd_seqs(seqReader); /** To Set Length Comparator **/
             if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
             }
         }
+        writer.flush();
     }
 
     public void print_set(String key) {

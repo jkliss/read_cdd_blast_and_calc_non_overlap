@@ -21,9 +21,9 @@ public class FullGeneBlast {
             br = new BufferedReader(fr);
             String sCurrentLine;
             br = new BufferedReader(new FileReader(filename));
-
             while ((sCurrentLine = br.readLine()) != null) {
                 try{
+                    String[] splits = sCurrentLine.split("\t");
 
                 } catch (IllegalStateException ex){
                     ex.printStackTrace();
