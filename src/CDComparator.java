@@ -45,7 +45,7 @@ public class CDComparator {
     }
 
     boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2) {
-        Protein CDProtein = cd_seqs.get(domain1.name);
+        Protein CDProtein = cd_seqs.get(domain1.name); /** NULL POINTER EXCEPTION ON PROTEIN **/
         int cd_length = CDProtein.getLength();
         int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
         System.err.println(combinedCDAlignmentLength + "\t" + cd_length);
