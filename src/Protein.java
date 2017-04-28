@@ -15,7 +15,7 @@ public class Protein {
     public Protein(String name, String seq){
         this.name = name;
         this.seq = seq;
-        length = seq.length();
+        this.length = seq.length();
     }
 
     public String getName() {
@@ -32,6 +32,12 @@ public class Protein {
     }
 
     public int getLength() {
+        try {
+            Integer.valueOf(length);
+        }
+        catch (NumberFormatException ex){
+            System.err.println("LENGTH OF " + name + " IS NULL!");
+        }
         return length;
     }
 

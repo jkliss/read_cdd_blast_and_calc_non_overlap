@@ -45,18 +45,13 @@ public class CDComparator {
     }
 
     boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2) {
-        try{
-            int cd_length = cd_seqs.get(domain1.name).getLength();
-            int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
-            System.err.println(combinedCDAlignmentLength + "\t" + cd_length);
-            if(combinedCDAlignmentLength >= cd_length*0.5){
-                return true;
-            }
-        } catch (NullPointerException ex){
-            ex.printStackTrace();
-            System.err.println("Not found:" + domain1.cd_name + " or " + domain2.cd_name);
+        Protein CDProtein = cd_seqs.get(domain1.name);
+        int cd_length = CDProtein.getLength();
+        int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
+        System.err.println(combinedCDAlignmentLength + "\t" + cd_length);
+        if(combinedCDAlignmentLength >= cd_length*0.5){
+            return true;
         }
-
         return false;
     }
 

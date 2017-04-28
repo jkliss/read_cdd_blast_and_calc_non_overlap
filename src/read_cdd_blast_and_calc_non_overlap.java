@@ -23,11 +23,11 @@ public class read_cdd_blast_and_calc_non_overlap {
             System.err.println("Set FullGeneCD...");
             cdReader.setFullGeneCD(args[1]);
             timer.elapsedFromLastStamp();
-            System.err.println("InitCDDetectReader...");
-            cdReader.initCDDetectReader(args[0]);
-            timer.elapsedFromLastStamp();
             System.err.println("Seq Reader...");
             cdReader.setSeqReader(args[2]);
+            timer.elapsedFromLastStamp();
+            System.err.println("InitCDDetectReader...");
+            cdReader.initCDDetectReader(args[0]);
             timer.elapsedFromLastStamp();
             System.err.println("Calc Overlap...");
             cdReader.calc_overlap();
