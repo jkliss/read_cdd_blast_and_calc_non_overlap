@@ -26,12 +26,13 @@ public class read_cdd_blast_and_calc_non_overlap {
             System.err.println("InitCDDetectReader...");
             cdReader.initCDDetectReader(args[0]);
             timer.elapsedFromLastStamp();
-            System.err.println("Calc Overlap...");
-            cdReader.calc_overlap();
-            timer.elapsedFromLastStamp();
             System.err.println("Seq Reader...");
             cdReader.setSeqReader(args[2]);
             timer.elapsedFromLastStamp();
+            System.err.println("Calc Overlap...");
+            cdReader.calc_overlap();
+            timer.elapsedFromLastStamp();
+
         }
         else {
             System.err.println("No File!\nUse one Argument for BLAST output as Input\nUse Two Arguments for only CD File + Full Gene File");

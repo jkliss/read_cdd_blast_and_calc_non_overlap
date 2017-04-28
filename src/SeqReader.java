@@ -41,6 +41,7 @@ public class SeqReader {
                     System.err.println(sCurrentLine);
                 }
             }
+            writeSeqLength();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -81,5 +82,6 @@ public class SeqReader {
         for (Protein protein : seqMap.values()) {
             writer.writeLine(protein.getName() + "\t" + protein.getLength());
         }
+        writer.flush();
     }
 }

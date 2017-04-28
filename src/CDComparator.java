@@ -33,11 +33,9 @@ public class CDComparator {
             for (int j = i + 1; j < list.size(); j++) {
                 ConservedDomain domain2 = list.get(j);
                 if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getEnd() && domain2.getEnd() > domain1.getEnd())) {
-                    domain1.setNonOverlap();
-                    domain2.setNonOverlap();
                     if(sizeComparison(domain1,domain2)){
-                        domain1.setInSizeSpec();
-                        domain2.setInSizeSpec();
+                        domain1.setNonOverlap();
+                        domain2.setNonOverlap();
                         fnd = true;
                     }
                 }
@@ -47,11 +45,18 @@ public class CDComparator {
     }
 
     boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2) {
-        int cd_length = cd_seqs.get(domain1.name).getLength();
-        int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
-        if(combinedCDAlignmentLength >= cd_length*0.5){
-            return true;
+        try{
+            int cd_length = cd_seqs.get(domain1.name).getLength();
+            int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
+            System.err.println(combinedCDAlignmentLength + "\t" + cd_length);
+            if(combinedCDAlignmentLength >= cd_length*0.5){
+                return true;
+            }
+        } catch (NullPointerException ex){
+            ex.printStackTrace();
+            System.err.println("Not found:" + domain1.cd_name + " or " + domain2.cd_name);
         }
+
         return false;
     }
 
