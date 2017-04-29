@@ -14,6 +14,7 @@ public class CDDetectReader {
     Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
     SeqReader seqReader;
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
+    CDComparator cdComparator = new CDComparator();
     Writer writer = new Writer("CDDetectReader.output");
 
     // READS Complete File with conserved Domains
@@ -63,8 +64,6 @@ public class CDDetectReader {
     public void calc_overlap() {
         for (String key : CDMap.keySet()) {
             List<ConservedDomain> list = CDMap.get(key);
-            CDComparator cdComparator = new CDComparator();
-            cdComparator.setCd_seqs(seqReader); /** To Set Length Comparator **/
             if (cdComparator.calculateNonOverlaps(list)) {
                 print_subset(key, list);
             }
@@ -126,6 +125,7 @@ public class CDDetectReader {
 
     public void setSeqReader(String filename) {
         this.seqReader = new SeqReader(filename);
+        cdComparator.setCd_seqs(seqReader); /** To Set Length Comparator **/
     }
 
     public void printCDs(){

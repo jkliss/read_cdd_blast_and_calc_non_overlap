@@ -5,6 +5,7 @@ import java.util.List;
  */
 public class CDComparator {
     SeqReader cd_seqs;
+    boolean ClusterDomainErrorSuppress = false;
 
     public boolean calculateNonOverlaps(List<ConservedDomain> list){
         if(cd_seqs==null){
@@ -45,12 +46,23 @@ public class CDComparator {
     }
 
     boolean sizeComparison(ConservedDomain domain1, ConservedDomain domain2) {
-        Protein CDProtein = cd_seqs.get(domain1.name); /** NULL POINTER EXCEPTION ON PROTEIN **/
-        int cd_length = CDProtein.getLength();
-        int combinedCDAlignmentLength = domain1.getLength() + domain2.getLength();
-        System.err.println(combinedCDAlignmentLength + "\t" + cd_length);
-        if(combinedCDAlignmentLength >= cd_length*0.5){
-            return true;
+        try {
+            Protein CDProtein1 = cd_seqs.get(domain1.cd_name);
+            Protein CDProtein2 = cd_seqs.get(domain2.cd_name);
+            int cdlength1 = CDProtein1.getLength();
+            int cdlength2 = CDProtein2.getLength();
+            if((domain1.length >= cdlength1*0.5) && (domain2.getLength() >= cdlength2*0.5)){
+                return true;
+            }
+        } catch (NullPointerException ex){
+            if((!ClusterDomainErrorSuppress) && (!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
+                System.err.println("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.cd_name + "#" + domain2.cd_name);
+            } else {
+                if(!ClusterDomainErrorSuppress){
+                    System.err.println("MISSING CLUSTER PROTEINSEQUENCE -- ERRORS REGARDING CLUSTERS WILL BE IGNORED");
+                    ClusterDomainErrorSuppress = true;
+                }
+            }
         }
         return false;
     }

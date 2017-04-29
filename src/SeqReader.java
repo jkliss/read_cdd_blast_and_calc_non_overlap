@@ -84,4 +84,8 @@ public class SeqReader {
         }
         writer.flush();
     }
+
+    public int size(){
+        return seqMap.size();
+    }
 }
