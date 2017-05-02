@@ -10,7 +10,6 @@ import java.util.Map;
 public class SeqReader {
     Map<String, Protein> seqMap = new HashMap<String, Protein>(1000);
     Writer writer = new Writer("SeqReader.output");
-
     public SeqReader(String filename){
         BufferedReader br = null;
         FileReader fr = null;

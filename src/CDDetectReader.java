@@ -16,6 +16,7 @@ public class CDDetectReader {
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
     CDComparator cdComparator = new CDComparator();
     Writer writer = new Writer("CDDetectReader.output");
+    SeqReader proteinSequences;
 
     // READS Complete File with conserved Domains
     // INPUT IS THE OUTFILE OF bwrpls.pl?
@@ -137,5 +138,18 @@ public class CDDetectReader {
             }
         }
         writer.flush();
+    }
+
+    public void setProteinSequences(String filename) {
+        proteinSequences = new SeqReader(filename);
+    }
+
+    public void removeSmallSequences(int lengthThreshold){
+        Map<String, Protein> pMap = proteinSequences.getSeqMap();
+        for (String proteinName : pMap.keySet()) {
+            if(pMap.get(proteinName).getLength() < lengthThreshold){
+                CDMap.remove(proteinName);
+            }
+        }
     }
 }
