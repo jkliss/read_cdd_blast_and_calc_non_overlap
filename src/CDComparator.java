@@ -5,6 +5,7 @@ import java.util.List;
  */
 public class CDComparator {
     SeqReader cd_seqs;
+    SeqReader proteinSequences;
     boolean ClusterDomainErrorSuppress = false;
     Writer writer = new Writer("CDComparator.output");
 
@@ -53,8 +54,26 @@ public class CDComparator {
             Protein CDProtein2 = cd_seqs.get(domain2.cd_name);
             int cdlength1 = CDProtein1.getLength();
             int cdlength2 = CDProtein2.getLength();
-            if((domain1.length >= cdlength1*0.5) && (domain2.getLength() >= cdlength2*0.5)){
+            /** FILTER STEP 5 **/
+            if((domain1.length < 50) || (domain2.getLength() < 50)){
+                writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
+                return false;
+            }
+            try {
+                /** FILTER STEP 7**/
+                if (cdSequenceSmallerThanPercent(proteinSequences.get(domain1.getName()), domain1.getLength() + domain2.getLength(), 0.4)){
+                    writer.writeLine("CD SEQUENCE LESS THAN 40%: " + domain1.getName() + "#" + proteinSequences.get(domain1.getName()).getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
+                    return false;
+                }
+            } catch (NullPointerException ex){
+                System.err.println("MISSING PROTEIN SEQUENCE: " + domain1.getName());
+            }
+            /** FILTER STEP 4 **/
+            if((domain1.getLength() >= cdlength1*0.5) && (domain2.getLength() >= cdlength2*0.5)){
                 return true;
+            } else {
+                writer.writeLine("DOMAIN CMP FULLGENE TOO SMALL " + domain1.getName() + "#" + domain1.getLength() + "/" + cdlength1*0.5 + " - " + domain2.getName() + "#" + domain2.getLength() + "/" + cdlength2*0.5);
+                return false;
             }
         } catch (NullPointerException ex){
             if((!ClusterDomainErrorSuppress) && (!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
@@ -65,12 +84,23 @@ public class CDComparator {
             }
         }
         if((!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
-            writer.writeLine("SIZE: " + domain1.getCd_name() + " - " + domain1.getLength() + " / " + cd_seqs.get(domain1.cd_name).getLength() + "#" + domain2.getCd_name() + " - " + domain2.getLength() + " / " + cd_seqs.get(domain2.cd_name).getLength());
+            writer.writeLine("DOMAIN TOO SMALL: (" + domain1.getName() + ")" + domain1.getCd_name() + " - " + domain1.getLength() + " / " + cd_seqs.get(domain1.cd_name).getLength() + " ### " + domain2.getCd_name() + " - " + domain2.getLength() + " / " + cd_seqs.get(domain2.cd_name).getLength());
         }
         return false;
     }
 
     public void setCd_seqs(SeqReader cd_seqs) {
         this.cd_seqs = cd_seqs;
+    }
+
+    public void setProteinSequences(SeqReader proteinSequences) {
+        this.proteinSequences = proteinSequences;
+    }
+
+    public boolean cdSequenceSmallerThanPercent(Protein protein, int sumLengthOfCD, double percent){
+        if(protein.getLength() <= sumLengthOfCD*percent){
+            return true;
+        }
+        return false;
     }
 }

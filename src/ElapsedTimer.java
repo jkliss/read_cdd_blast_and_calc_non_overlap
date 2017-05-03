@@ -15,7 +15,7 @@ public class ElapsedTimer {
         long elapsed = time - this.time;
         this.time = time;
         double seconds = (double) elapsed/1000000000;
-        String timeStr = "Seconds Elapsed: " + Double.toString(seconds);
+        String timeStr = "Seconds (from LastStamp): " + Double.toString(seconds);
         System.err.println(timeStr);
         return timeStr;
     }
@@ -24,7 +24,7 @@ public class ElapsedTimer {
         long time = System.nanoTime();
         long elapsed = time - this.startTime;
         double seconds = (double) elapsed/1000000000;
-        String timeStr = "Seconds Elapsed: " + Double.toString(seconds);
+        String timeStr = "Seconds (from Start): " + Double.toString(seconds);
         System.err.println(timeStr);
         return timeStr;
     }

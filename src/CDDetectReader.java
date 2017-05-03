@@ -142,6 +142,7 @@ public class CDDetectReader {
 
     public void setProteinSequences(String filename) {
         proteinSequences = new SeqReader(filename);
+        cdComparator.setProteinSequences(proteinSequences);
     }
 
     public void removeSmallSequences(int lengthThreshold){
