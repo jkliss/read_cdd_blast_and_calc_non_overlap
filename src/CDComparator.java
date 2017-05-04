@@ -35,8 +35,11 @@ public class CDComparator {
             ConservedDomain domain1 = list.get(i);
             for (int j = i + 1; j < list.size(); j++) {
                 ConservedDomain domain2 = list.get(j);
+                /**
+                 * FILTER STEP 2
+                 */
                 if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getEnd() && domain2.getEnd() > domain1.getEnd())) {
-                    if(sizeComparison(domain1,domain2)){
+                    if(sizeComparison(domain1,domain2) && gapBetweenDomainsNotAtEnd(domain1,domain2)){
                         domain1.setNonOverlap();
                         domain2.setNonOverlap();
                         fnd = true;
@@ -54,13 +57,17 @@ public class CDComparator {
             Protein CDProtein2 = cd_seqs.get(domain2.cd_name);
             int cdlength1 = CDProtein1.getLength();
             int cdlength2 = CDProtein2.getLength();
-            /** FILTER STEP 5 **/
+            /**
+             * FILTER STEP 5
+             * **/
             if((domain1.length < 50) || (domain2.getLength() < 50)){
-                writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
+                writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain2.getCd_name() + " " + domain2.getLength());
                 return false;
             }
             try {
-                /** FILTER STEP 7**/
+                /**
+                 * FILTER STEP 7
+                 * */
                 if (cdSequenceSmallerThanPercent(proteinSequences.get(domain1.getName()), domain1.getLength() + domain2.getLength(), 0.4)){
                     writer.writeLine("CD SEQUENCE LESS THAN 40%: " + domain1.getName() + "#" + proteinSequences.get(domain1.getName()).getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
                     return false;
@@ -68,7 +75,9 @@ public class CDComparator {
             } catch (NullPointerException ex){
                 System.err.println("MISSING PROTEIN SEQUENCE: " + domain1.getName());
             }
-            /** FILTER STEP 4 **/
+            /**
+             * FILTER STEP 4
+             **/
             if((domain1.getLength() >= cdlength1*0.5) && (domain2.getLength() >= cdlength2*0.5)){
                 return true;
             } else {
@@ -101,6 +110,28 @@ public class CDComparator {
         if(protein.getLength() <= sumLengthOfCD*percent){
             return true;
         }
+        return false;
+    }
+
+    public boolean gapBetweenDomainsNotAtEnd(ConservedDomain domain1, ConservedDomain domain2){
+        /**
+         * FILTER STEP 8
+         */
+        Protein protein = proteinSequences.get(domain1.getName());
+        int proteinLength = protein.getLength();
+        int diff = 0;
+        if(domain1.getEnd() < domain2.getStart()){
+            diff = proteinLength - domain2.getStart();
+            if(diff > 59 && diff >= proteinLength*0.1){
+                return true;
+            }
+        } else if(domain2.getEnd() < domain1.getStart()){
+            diff = protein.length - domain1.getStart();
+            if(diff > 59 && diff >= proteinLength*0.1){
+                return true;
+            }
+        }
+        writer.writeLine("INSUFFICIENT GAP OR SECOND DOMAIN NOT IN ENDREGION: " + diff + " " + domain1.getName() + " " + domain1.getCd_name() + " (" + domain1.getStart() + "," + domain1.getEnd() + ") " + domain2.getCd_name() + " (" + domain2.getStart() + "," + domain2.getEnd() + ")");
         return false;
     }
 }
