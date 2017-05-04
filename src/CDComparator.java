@@ -1,4 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by students on 27.04.17.
@@ -7,6 +10,7 @@ public class CDComparator {
     SeqReader cd_seqs;
     SeqReader proteinSequences;
     boolean ClusterDomainErrorSuppress = false;
+    List<List<ConservedDomain>> domainsPerPosition;
     Writer writer = new Writer("CDComparator.output");
 
     public boolean calculateNonOverlaps(List<ConservedDomain> list){
@@ -30,6 +34,7 @@ public class CDComparator {
     }
 
     public boolean calculateNonOverlapsWithSize(List<ConservedDomain> list){
+        domainsInGaps(list); // PRECALCULATION FOR STEP 10
         boolean fnd = false;
         for (int i = 0; i < list.size() - 1; i++) {
             ConservedDomain domain1 = list.get(i);
@@ -40,9 +45,11 @@ public class CDComparator {
                  */
                 if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getEnd() && domain2.getEnd() > domain1.getEnd())) {
                     if(sizeComparison(domain1,domain2) && gapBetweenDomainsNotAtEnd(domain1,domain2)){
-                        domain1.setNonOverlap();
-                        domain2.setNonOverlap();
-                        fnd = true;
+                        if(lessThanHalfInGaps(domain1, domain2, list.size())){
+                            domain1.setNonOverlap();
+                            domain2.setNonOverlap();
+                            fnd = true;
+                        }
                     }
                 }
             }
@@ -133,5 +140,60 @@ public class CDComparator {
         }
         writer.writeLine("INSUFFICIENT GAP OR SECOND DOMAIN NOT IN ENDREGION: " + diff + " " + domain1.getName() + " " + domain1.getCd_name() + " (" + domain1.getStart() + "," + domain1.getEnd() + ") " + domain2.getCd_name() + " (" + domain2.getStart() + "," + domain2.getEnd() + ")");
         return false;
+    }
+
+    public void domainsInGaps(List<ConservedDomain> list){
+        domainsPerPosition = new ArrayList<List<ConservedDomain>>();
+        initDomainMap(list);
+        for (ConservedDomain domain : list) {
+            for(int i = domain.getStart(); i <= domain.getEnd(); i++){
+                domainsPerPosition.get(i).add(domain);
+            }
+        }
+    }
+
+    public int howManyDomainsInRangeMax(int gapStart, int gapEnd){
+        int i = 0;
+        for(int k = gapStart+1; k < gapEnd-1; k++){
+            List<ConservedDomain> positionDomains = domainsPerPosition.get(k);
+            if(i < positionDomains.size()){
+                i = positionDomains.size();
+            }
+        }
+        return i;
+    }
+
+    public boolean lessThanHalfInGaps(ConservedDomain domain1, ConservedDomain domain2, int numberOfDomains){
+        int amount;
+        if(domain1.getEnd() < domain2.getStart()){
+            amount = howManyDomainsInRangeMax(domain1.getEnd(), domain2.getStart());
+            if(amount > numberOfDomains*0.5){
+                writer.writeLine("");
+                return false;
+            }
+        } else {
+            amount = howManyDomainsInRangeMax(domain2.getEnd(), domain1.getStart());
+            if(amount > numberOfDomains*0.5){
+                writer.writeLine("");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void initDomainMap(List<ConservedDomain> list){
+        ConservedDomain conservedDomain = list.get(0);
+        String name = conservedDomain.getName();
+        Protein protein = proteinSequences.get(name);
+        int length = 0;
+        try {
+            length = protein.getLength();
+        } catch (NullPointerException ex ){
+            ex.printStackTrace();
+            System.err.println(name);
+        }
+        for (int i = 0; i <= length; i++){
+            domainsPerPosition.add(new ArrayList<ConservedDomain>());
+        }
     }
 }
