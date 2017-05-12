@@ -55,4 +55,17 @@ public class Writer {
             e.printStackTrace();
         }
     }
+
+    public void writeAllLines(String[] lines){
+        for (String line : lines) {
+            if(line != null){
+                writeLine(line);
+            }
+        }
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

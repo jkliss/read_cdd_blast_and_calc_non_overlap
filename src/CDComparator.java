@@ -34,6 +34,7 @@ public class CDComparator {
     public boolean calculateNonOverlapsWithSize(List<ConservedDomain> list){
         domainsInGaps(list); // PRECALCULATION FOR STEP 10
         boolean fnd = false;
+        boolean noverlap = false;
         for (int i = 0; i < list.size() - 1; i++) {
             ConservedDomain domain1 = list.get(i);
             for (int j = i + 1; j < list.size(); j++) {
@@ -42,8 +43,9 @@ public class CDComparator {
                  * FILTER STEP 2
                  */
                 if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getEnd() && domain2.getEnd() > domain1.getEnd())) {
+                    noverlap = true;
                     if(sizeComparison(domain1,domain2) && gapBetweenDomainsNotAtEnd(domain1,domain2)){
-                        if(lessThanHalfInGaps(domain1, domain2, list.size())){
+                        if(lessThanHalfInGaps(domain1, domain2, list.size())) {
                             domain1.setNonOverlap();
                             domain2.setNonOverlap();
                             fnd = true;
@@ -51,6 +53,9 @@ public class CDComparator {
                     }
                 }
             }
+        }
+        if(!noverlap){
+            writer.writeLine("No non Overlapping Full Gene Sets for: " + list.get(0).getName());
         }
         writer.flush();
         return fnd;
@@ -67,6 +72,13 @@ public class CDComparator {
              * **/
             if((domain1.length < 50) || (domain2.getLength() < 50)){
                 writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain2.getCd_name() + " " + domain2.getLength());
+                return false;
+            }
+            /**
+             * FILTER STEP 9
+             */
+            if(domain1.getCd_name() == domain2.getCd_name()){
+                writer.writeLine("SAME DOMAIN IN NON OVERLAPPING SET: " + domain1.getCd_name() + " - " + domain2.getCd_name());
                 return false;
             }
             try {
@@ -162,17 +174,20 @@ public class CDComparator {
     }
 
     public boolean lessThanHalfInGaps(ConservedDomain domain1, ConservedDomain domain2, int numberOfDomains){
+        /**
+         * FILTER STEP 10
+         */
         int amount;
         if(domain1.getEnd() < domain2.getStart()){
             amount = howManyDomainsInRangeMax(domain1.getEnd(), domain2.getStart());
             if(amount > numberOfDomains*0.5){
-                writer.writeLine("");
+                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getName() + " " + amount + " of " + numberOfDomains);
                 return false;
             }
         } else {
             amount = howManyDomainsInRangeMax(domain2.getEnd(), domain1.getStart());
             if(amount > numberOfDomains*0.5){
-                writer.writeLine("");
+                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getName() + " " + amount + " of " + numberOfDomains);
                 return false;
             }
         }

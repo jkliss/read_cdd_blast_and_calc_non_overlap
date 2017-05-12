@@ -37,6 +37,9 @@ public class CDDetectReader {
                     }
                     ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
                     currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
+                    /**
+                     * FILTER STEP 3
+                     */
                     if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
                         CDMap.put(currentDomain.getName(), currentList);
