@@ -1,4 +1,5 @@
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,9 +13,9 @@ public class NCBI_Detection {
 
     public static void main(String[] args) {
         if(args.length > 0){
-            NCBI_Detection ncbi_detection = new NCBI_Detection(new SeqReader("GCF_000974405.1_ASM97440v1_protein.faa.small_heads"));
+            NCBI_Detection ncbi_detection = new NCBI_Detection(new SeqReader(args[0]));
             if(args.length > 1){
-                ncbi_detection = new NCBI_Detection(new SeqReader("GCF_000974405.1_ASM97440v1_protein.faa.small_heads"), Integer.parseInt(args[1]));
+                ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
             }
             ncbi_detection.start();
         } else {
@@ -87,21 +88,48 @@ public class NCBI_Detection {
     public Thread scheduler(final int i){
         Thread thread = new Thread(new Thread() {
             public void run() {
-                Runtime r = Runtime.getRuntime();
                 try{
                     System.err.println("Protein Set " + i + " started.");
-                    Process p = r.exec("perl mod_bwrpsd.pl < proteinSet_" + i + " 1> proteinSet_" + i + ".out 2> proteinSet_" + i + ".err" );
-                    p.waitFor();
-                    System.err.println(p.getErrorStream().toString());
-                } catch (IOException ex){
-                    System.err.println("SYSTEM_CALL_IO_EXCEPTION");
+                    //ProcessBuilder ps=new ProcessBuilder("./mod_bwrpsd.pl", "< proteinSet_" + i, "1> proteinSet_" + i + ".out", "2> proteinSet_" + i + ".err");
+                    ProcessBuilder ps = new ProcessBuilder("./mod_bwrpsd.pl");
+                    //ProcessBuilder ps = new ProcessBuilder("echo");
+                    /**From the DOC:  Initially, this property is false, meaning that the
+                    //standard output and error output of a subprocess are sent to two
+                    separate streams **/
+                    ps.redirectErrorStream(true);
+                    Process pr = null;
+                    pr = ps.start();
+                    Writer writer = new Writer("proteinSet_" + i + ".out");
+                    OutputStream stdin = pr.getOutputStream();
+                    BufferedWriter stdin_writer = new BufferedWriter(new OutputStreamWriter(stdin));
+                    Reader reader = new Reader("proteinSet_" + i);
+
+                    String line;
+                    while((line = reader.readLine()) != null) {
+                        stdin_writer.write(line);
+                        stdin_writer.newLine();
+                    }
+                    stdin_writer.flush();
+                    stdin_writer.close();
+
+                    pr.getInputStream();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                    while ((line = in.readLine()) != null) {
+                        writer.writeLine(line);
+                    }
+                    writer.flush();
+                    pr.waitFor();
+                    System.out.println("ok!");
+                    in.close();
+                    writer.close();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 System.err.println("Protein Set " + i + " ended");
             }
         });
-
         return thread;
     }
 }

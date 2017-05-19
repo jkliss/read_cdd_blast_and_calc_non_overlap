@@ -40,6 +40,10 @@ public class SeqReader {
                     System.err.println(sCurrentLine);
                 }
             }
+            if(!seqMap.containsKey(currentHead)){
+                Protein currentProtein = new Protein(currentHead, currentSeq);
+                seqMap.put(currentHead, currentProtein);
+            }
             writeSeqLength();
         } catch (IOException e) {
             e.printStackTrace();
