@@ -44,4 +44,9 @@ public class Protein {
     public void removeSeq(){
         seq = null;
     }
+
+    public String getSeq() {
+        return seq;
+    }
+
 }
