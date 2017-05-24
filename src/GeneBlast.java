@@ -9,11 +9,11 @@ import java.util.Map;
 /**
  * Created by students on 27.04.17.
  */
-public class FullGeneBlast {
+public class GeneBlast {
     Map<String, List<ConservedDomain>> blastMap = new HashMap<String, List<ConservedDomain>>(10000000);
     Writer writer = new Writer("TEST.output");
 
-    public FullGeneBlast(String filename){
+    public GeneBlast(String filename){
         BufferedReader br = null;
         FileReader fr = null;
         try {
