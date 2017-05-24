@@ -18,4 +18,8 @@ public class DomainCounter {
     public int getCount(String name){
         return domainCount.get(name);
     }
+
+    public void clearCounter(){
+        domainCount = new HashMap<String, Integer>();
+    }
 }
