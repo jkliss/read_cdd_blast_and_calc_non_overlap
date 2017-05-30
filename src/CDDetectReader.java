@@ -43,7 +43,7 @@ public class CDDetectReader {
                      */
                     if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
-                        CDMap.put(currentDomain.getName(), currentList);
+                        CDMap.put(currentDomain.getProteinName(), currentList);
                     }
                 } catch (IllegalStateException ex){
                     ex.printStackTrace();
@@ -67,6 +67,17 @@ public class CDDetectReader {
     }
 
     public void calc_overlap() {
+        for (String key : CDMap.keySet()) {
+            List<ConservedDomain> list = CDMap.get(key);
+            if (cdComparator.calculateNonOverlaps(list)) {
+                print_subset(key, list);
+            }
+        }
+        writer.flush();
+    }
+
+    public void calc_overlap(boolean override) {
+        countDomainOccurs();
         for (String key : CDMap.keySet()) {
             List<ConservedDomain> list = CDMap.get(key);
             if (cdComparator.calculateNonOverlaps(list)) {
@@ -156,5 +167,21 @@ public class CDDetectReader {
                 CDMap.remove(proteinName);
             }
         }
+    }
+
+    public void countDomainOccurs(){
+        for (String proteinName : CDMap.keySet()) {
+            List<ConservedDomain> domains = CDMap.get(proteinName);
+            for (int i = 0; i < domains.size() - 1; i++) {
+                ConservedDomain domain1 = domains.get(i);
+                for (int j = i + 1; j < domains.size(); j++) {
+                    ConservedDomain domain2 = domains.get(j);
+                    if ((domain1.getStart() > domain2.getEnd() && domain1.getEnd() > domain2.getEnd()) || (domain2.getStart() > domain1.getEnd() && domain2.getEnd() > domain1.getEnd())) {
+                        domainCounter.addCombination(domain1.getCd_name(), domain2.getCd_name());
+                    }
+                }
+            }
+        }
+        cdComparator.setDomainCounter(domainCounter);
     }
 }

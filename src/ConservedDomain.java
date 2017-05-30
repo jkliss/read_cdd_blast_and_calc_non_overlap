@@ -8,7 +8,7 @@ public class ConservedDomain {
     int start = 0;
     int end = 0;
     int length = 0;
-    String name = "";
+    String protein_name = "";
     String cd_name;
     Protein protein;
     boolean __overlapCalcDone;
@@ -16,17 +16,17 @@ public class ConservedDomain {
     boolean inSizeSpec = false;
 
     public ConservedDomain(String name){
-        this.name = name;
+        this.protein_name = name;
     }
 
     public ConservedDomain(Protein protein){
         this.protein = protein;
-        this.name = protein.getName();
+        this.protein_name = protein.getName();
     }
 
     public ConservedDomain(String protein, String name_of_conserved_domain){
         this.protein = new Protein(protein);
-        this.name = this.protein.getName();
+        this.protein_name = this.protein.getName();
         this.cd_name = name_of_conserved_domain;
     }
 
@@ -44,8 +44,8 @@ public class ConservedDomain {
         return start;
     }
 
-    public String getName() {
-        return name;
+    public String getProteinName() {
+        return protein_name;
     }
 
     public boolean isInList(List<ConservedDomain> list){
@@ -58,9 +58,9 @@ public class ConservedDomain {
     }
 
     public boolean nonOverlapping(){
-        /*if(!__overlapCalcDone){
+        if(!__overlapCalcDone){
             System.err.println("No Overlap Calculation done!");
-        }*/
+        }
         return hasNonOverlap;
     }
 

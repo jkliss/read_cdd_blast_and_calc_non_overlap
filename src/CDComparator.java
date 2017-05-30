@@ -10,6 +10,7 @@ public class CDComparator {
     boolean ClusterDomainErrorSuppress = false;
     List<List<ConservedDomain>> domainsPerPosition;
     Writer writer = new Writer("CDComparator.output");
+    DomainCounter domainCounter;
 
     public boolean calculateNonOverlaps(List<ConservedDomain> list){
         if(cd_seqs==null){
@@ -55,7 +56,7 @@ public class CDComparator {
             }
         }
         if(!noverlap){
-            writer.writeLine("No non Overlapping Full Gene Sets for: " + list.get(0).getName());
+            writer.writeLine("No non Overlapping Full Gene Sets for: " + list.get(0).getProteinName());
         }
         writer.flush();
         return fnd;
@@ -71,7 +72,7 @@ public class CDComparator {
              * FILTER STEP 5
              * **/
             if((domain1.length < 50) || (domain2.getLength() < 50)){
-                writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain2.getCd_name() + " " + domain2.getLength());
+                writer.writeLine("DOMAIN 1 OR 2 LENGTH TOO SHORT: " + domain1.getProteinName() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain2.getCd_name() + " " + domain2.getLength());
                 return false;
             }
             /**
@@ -81,16 +82,22 @@ public class CDComparator {
                 writer.writeLine("SAME DOMAIN IN NON OVERLAPPING SET: " + domain1.getCd_name() + " - " + domain2.getCd_name());
                 return false;
             }
+            /**
+             * FILTER STEP 10
+             */
+            if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 1000){
+                writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name());
+            }
             try {
                 /**
                  * FILTER STEP 7
                  * */
-                if (cdSequenceSmallerThanPercent(proteinSequences.get(domain1.getName()), domain1.getLength() + domain2.getLength(), 0.4)){
-                    writer.writeLine("CD SEQUENCE LESS THAN 40%: " + domain1.getName() + "#" + proteinSequences.get(domain1.getName()).getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
+                if (cdSequenceSmallerThanPercent(proteinSequences.get(domain1.getProteinName()), domain1.getLength() + domain2.getLength(), 0.4)){
+                    writer.writeLine("CD SEQUENCE LESS THAN 40%: " + domain1.getProteinName() + "#" + proteinSequences.get(domain1.getProteinName()).getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength() + " - " + domain1.getCd_name() + " " + domain1.getLength());
                     return false;
                 }
             } catch (NullPointerException ex){
-                System.err.println("MISSING PROTEIN SEQUENCE: " + domain1.getName());
+                System.err.println("MISSING PROTEIN SEQUENCE: " + domain1.getProteinName());
             }
             /**
              * FILTER STEP 4
@@ -98,7 +105,7 @@ public class CDComparator {
             if((domain1.getLength() >= cdlength1*0.5) && (domain2.getLength() >= cdlength2*0.5)){
                 return true;
             } else {
-                writer.writeLine("DOMAIN CMP FULLGENE TOO SMALL " + domain1.getName() + "#" + domain1.getLength() + "/" + cdlength1*0.5 + " - " + domain2.getName() + "#" + domain2.getLength() + "/" + cdlength2*0.5);
+                writer.writeLine("DOMAIN CMP FULLGENE TOO SMALL " + domain1.getProteinName() + "#" + domain1.getLength() + "/" + cdlength1*0.5 + " - " + domain2.getProteinName() + "#" + domain2.getLength() + "/" + cdlength2*0.5);
                 return false;
             }
         } catch (NullPointerException ex){
@@ -110,7 +117,7 @@ public class CDComparator {
             }
         }
         if((!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
-            writer.writeLine("DOMAIN TOO SMALL: (" + domain1.getName() + ")" + domain1.getCd_name() + " - " + domain1.getLength() + " / " + cd_seqs.get(domain1.cd_name).getLength() + " ### " + domain2.getCd_name() + " - " + domain2.getLength() + " / " + cd_seqs.get(domain2.cd_name).getLength());
+            writer.writeLine("DOMAIN TOO SMALL: (" + domain1.getProteinName() + ")" + domain1.getCd_name() + " - " + domain1.getLength() + " / " + cd_seqs.get(domain1.cd_name).getLength() + " ### " + domain2.getCd_name() + " - " + domain2.getLength() + " / " + cd_seqs.get(domain2.cd_name).getLength());
         }
         return false;
     }
@@ -134,7 +141,7 @@ public class CDComparator {
         /**
          * FILTER STEP 8
          */
-        Protein protein = proteinSequences.get(domain1.getName());
+        Protein protein = proteinSequences.get(domain1.getProteinName());
         int proteinLength = protein.getLength();
         int diff = 0;
         if(domain1.getEnd() < domain2.getStart()){
@@ -148,7 +155,7 @@ public class CDComparator {
                 return true;
             }
         }
-        writer.writeLine("INSUFFICIENT GAP OR SECOND DOMAIN NOT IN ENDREGION: " + diff + " " + domain1.getName() + " " + domain1.getCd_name() + " (" + domain1.getStart() + "," + domain1.getEnd() + ") " + domain2.getCd_name() + " (" + domain2.getStart() + "," + domain2.getEnd() + ")");
+        writer.writeLine("INSUFFICIENT GAP OR SECOND DOMAIN NOT IN ENDREGION: " + diff + " " + domain1.getProteinName() + " " + domain1.getCd_name() + " (" + domain1.getStart() + "," + domain1.getEnd() + ") " + domain2.getCd_name() + " (" + domain2.getStart() + "," + domain2.getEnd() + ")");
         return false;
     }
 
@@ -181,13 +188,13 @@ public class CDComparator {
         if(domain1.getEnd() < domain2.getStart()){
             amount = howManyDomainsInRangeMax(domain1.getEnd(), domain2.getStart());
             if(amount > numberOfDomains*0.5){
-                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getName() + " " + amount + " of " + numberOfDomains);
+                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getProteinName() + " " + amount + " of " + numberOfDomains);
                 return false;
             }
         } else {
             amount = howManyDomainsInRangeMax(domain2.getEnd(), domain1.getStart());
             if(amount > numberOfDomains*0.5){
-                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getName() + " " + amount + " of " + numberOfDomains);
+                writer.writeLine("MORE THAN HALF IN GAPS: " + domain1.getProteinName() + " " + amount + " of " + numberOfDomains);
                 return false;
             }
         }
@@ -196,7 +203,7 @@ public class CDComparator {
 
     public void initDomainMap(List<ConservedDomain> list){
         ConservedDomain conservedDomain = list.get(0);
-        String name = conservedDomain.getName();
+        String name = conservedDomain.getProteinName();
         Protein protein = proteinSequences.get(name);
         int length = 0;
         try {
@@ -208,5 +215,9 @@ public class CDComparator {
         for (int i = 0; i <= length; i++){
             domainsPerPosition.add(new ArrayList<ConservedDomain>());
         }
+    }
+
+    public void setDomainCounter(DomainCounter domainCounter) {
+        this.domainCounter = domainCounter;
     }
 }

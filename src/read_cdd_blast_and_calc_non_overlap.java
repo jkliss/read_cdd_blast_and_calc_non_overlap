@@ -59,7 +59,7 @@ public class read_cdd_blast_and_calc_non_overlap {
              * Die Angabe mit 600 aa Residuen ist im Paper Falsch und meint Nukleotide... Daher wird als Schwellenwert 200 aa (also 600/3 angenommen)
              */
             cdReader.removeSmallSequences(200); /** FILTER STEP 6 **/
-            cdReader.calc_overlap();
+            cdReader.calc_overlap(true);
             //timer.elapsedFromLastStamp();
             timer.elapsedFromStart();
         }
