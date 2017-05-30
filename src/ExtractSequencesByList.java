@@ -12,6 +12,9 @@ public class ExtractSequencesByList {
             String line;
             while((line = reader.readLine()) != null){
                 try{
+                    if(line.contains(">")){
+                        line = line.replace(">", "");
+                    }
                     Protein protein = seqReader.get(line);
                     System.out.println(">" + protein.getName() + "\n" + protein.getSeq());
                 } catch (NullPointerException ex){

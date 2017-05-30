@@ -24,6 +24,7 @@ public class SeqReader {
                 try{
                     if(sCurrentLine.contains(">")){
                         sCurrentLine = sCurrentLine.replace(">", "");
+                        // If not first run, old protein write to hash
                         if(currentHead.length() > 1){
                             Protein currentProtein = new Protein(currentHead, currentSeq);
                             seqMap.put(currentHead, currentProtein);
@@ -40,6 +41,7 @@ public class SeqReader {
                     System.err.println(sCurrentLine);
                 }
             }
+            // If last not contained -> Last flush to hash
             if(!seqMap.containsKey(currentHead)){
                 Protein currentProtein = new Protein(currentHead, currentSeq);
                 seqMap.put(currentHead, currentProtein);
