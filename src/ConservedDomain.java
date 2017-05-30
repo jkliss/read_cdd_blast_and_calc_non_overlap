@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by students on 25.04.17.
@@ -58,9 +57,6 @@ public class ConservedDomain {
     }
 
     public boolean nonOverlapping(){
-        if(!__overlapCalcDone){
-            System.err.println("No Overlap Calculation done!");
-        }
         return hasNonOverlap;
     }
 

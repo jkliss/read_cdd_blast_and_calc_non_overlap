@@ -85,8 +85,13 @@ public class CDComparator {
             /**
              * FILTER STEP 10
              */
-            if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 1000){
-                writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name());
+            try {
+                if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 1000){
+                    writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name());
+                    return false;
+                }
+            } catch (NullPointerException ex){
+                System.err.println("No Count for " + domain1.getCd_name() + "," + domain2.getCd_name());
             }
             try {
                 /**
@@ -109,6 +114,7 @@ public class CDComparator {
                 return false;
             }
         } catch (NullPointerException ex){
+            ex.fillInStackTrace();
             if((!ClusterDomainErrorSuppress) && (!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
                 System.err.println("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.cd_name + "#" + domain2.cd_name);
             } else if(!ClusterDomainErrorSuppress){

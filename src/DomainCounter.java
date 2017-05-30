@@ -21,6 +21,7 @@ public class DomainCounter {
 
     public void addCombination(String name1, String name2){
         inc(name1 + name2);
+        inc(name2 + name1);
     }
 
     public int getCountCombination(String name1, String name2){
