@@ -17,6 +17,7 @@ public class CDDetectReader {
     CDComparator cdComparator = new CDComparator();
     Writer writer = new Writer("CDDetectReader.output");
     SeqReader proteinSequences;
+    DomainCounter domainCounter = new DomainCounter();
 
     // READS Complete File with conserved Domains
     // INPUT IS THE OUTFILE OF bwrpls.pl?

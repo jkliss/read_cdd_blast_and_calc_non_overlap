@@ -7,7 +7,7 @@ public class ElapsedTimer {
 
     public ElapsedTimer(){
         startTime = System.nanoTime();
-        time = System.nanoTime();
+        time = startTime;
     }
 
     public String elapsedFromLastStamp(){

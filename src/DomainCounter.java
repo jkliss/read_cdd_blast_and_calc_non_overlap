@@ -22,4 +22,21 @@ public class DomainCounter {
     public void clearCounter(){
         domainCount = new HashMap<String, Integer>();
     }
+
+    public void addCombination(String name1, String name2){
+        inc(name1 + name2);
+        inc(name2 + name1);
+    }
+
+    public int getCountCombination(String name1, String name2){
+        return max(name1, name2);
+    }
+
+    public int max(String name1, String name2){
+        if(getCount(name1 + name2) < getCount(name2 + name1)){
+            return getCount(name2 + name1);
+        } else {
+            return getCount(name1 + name2);
+        }
+    }
 }
