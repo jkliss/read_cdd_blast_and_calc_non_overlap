@@ -11,8 +11,12 @@ public class ExtractSequencesByList {
             Reader reader = new Reader(args[1]);
             String line;
             while((line = reader.readLine()) != null){
-                Protein protein = seqReader.get(line);
-                System.out.println(">" + protein.getName() + "\n" + protein.getSeq());
+                try{
+                    Protein protein = seqReader.get(line);
+                    System.out.println(">" + protein.getName() + "\n" + protein.getSeq());
+                } catch (NullPointerException ex){
+                    System.err.println("Head not found: " + line);
+                }
             }
         }
     }

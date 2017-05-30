@@ -91,4 +91,8 @@ public class SeqReader {
     public int size(){
         return seqMap.size();
     }
+
+    public boolean hasSequence(String seq){
+        return seqMap.containsKey(seq);
+    }
 }
