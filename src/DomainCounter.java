@@ -5,6 +5,7 @@ import java.util.Map;
  * Created by students on 24.05.17.
  */
 public class DomainCounter {
+    Writer writer = new Writer("DomainCounter.out");
     Map<String, Integer> domainCount = new HashMap<String, Integer>();
 
     public void inc(String name){
@@ -30,5 +31,12 @@ public class DomainCounter {
         } else {
             return getCount(name1 + name2);
         }
+    }
+
+    public void printAllCounts(){
+        for (String domain_combinations : domainCount.keySet()) {
+            writer.writeLine(domain_combinations + "\t" + domainCount.get(domain_combinations));
+        }
+        writer.flush();
     }
 }

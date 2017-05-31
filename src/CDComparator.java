@@ -225,5 +225,6 @@ public class CDComparator {
 
     public void setDomainCounter(DomainCounter domainCounter) {
         this.domainCounter = domainCounter;
+        domainCounter.printAllCounts();
     }
 }
