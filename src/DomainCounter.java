@@ -6,7 +6,7 @@ import java.util.Map;
  */
 public class DomainCounter {
     Writer writer = new Writer("DomainCounter.out");
-    Map<String, Integer> domainCount = new HashMap<String, Integer>();
+    Map<String, Integer> domainCount = new HashMap<String, Integer>(200000);
 
     public void inc(String name){
         if(!domainCount.containsKey(name)){
