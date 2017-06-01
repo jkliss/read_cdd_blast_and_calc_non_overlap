@@ -117,6 +117,7 @@ public class CDComparator {
             ex.fillInStackTrace();
             if((!ClusterDomainErrorSuppress) && (!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
                 System.err.println("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.cd_name + "#" + domain2.cd_name);
+                writer.writeLine("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.getProteinName() + "-" + domain1.cd_name + "#" + domain2.cd_name);
             } else if(!ClusterDomainErrorSuppress){
                     System.err.println("MISSING CLUSTER PROTEINSEQUENCE -- ERRORS REGARDING CLUSTERS WILL BE IGNORED");
                     ClusterDomainErrorSuppress = true;

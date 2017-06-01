@@ -16,6 +16,7 @@ public class CDDetectReader {
     Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
     CDComparator cdComparator = new CDComparator();
     Writer writer = new Writer("CDDetectReader.output");
+    Writer writerFullGene = new Writer("NoFullGeneDomain.output");
     SeqReader proteinSequences;
     DomainCounter domainCounter = new DomainCounter();
 
@@ -44,6 +45,8 @@ public class CDDetectReader {
                     if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
                         currentList.add(currentDomain);
                         CDMap.put(currentDomain.getProteinName(), currentList);
+                    } else {
+                        writerFullGene.writeLine(currentDomain.getProteinName() + " - " + currentDomain.getCd_name());
                     }
                 } catch (IllegalStateException ex){
                     ex.printStackTrace();
@@ -51,6 +54,7 @@ public class CDDetectReader {
                     System.err.println(sCurrentLine);
                 }
             }
+            writerFullGene.close();
             System.err.println("Size: " + CDMap.size());
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,12 +165,15 @@ public class CDDetectReader {
     }
 
     public void removeSmallSequences(int lengthThreshold){
+        Writer writer = new Writer("SmallSequenceFilter.out");
         Map<String, Protein> pMap = proteinSequences.getSeqMap();
         for (String proteinName : pMap.keySet()) {
             if(pMap.get(proteinName).getLength() < lengthThreshold){
                 CDMap.remove(proteinName);
+                writer.writeLine("Protein Smaller than "+ lengthThreshold +": " + proteinName + " #" + pMap.get(proteinName).getLength());
             }
         }
+        writer.close();
     }
 
     public void countDomainOccurs(){
