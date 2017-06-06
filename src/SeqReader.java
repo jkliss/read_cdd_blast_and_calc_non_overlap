@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by students on 27.04.17.
  */
 public class SeqReader {
-    Map<String, Protein> seqMap = new HashMap<String, Protein>(1000);
+    Map<String, Protein> seqMap = new HashMap<String, Protein>(1000000);
     Writer writer = new Writer("SeqReader.output");
     public SeqReader(String filename){
         BufferedReader br = null;
