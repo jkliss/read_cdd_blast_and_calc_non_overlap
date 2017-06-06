@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,9 +9,11 @@ import java.util.Map;
  * Created by students on 27.04.17.
  */
 public class SeqReader {
-    Map<String, Protein> seqMap = new HashMap<String, Protein>(1000000);
+    Map<String, Protein> seqMap = new HashMap<String, Protein>();
     Writer writer = new Writer("SeqReader.output");
+
     public SeqReader(String filename){
+        initMap(filename); //Initialize HashMap Depending on Filesize
         BufferedReader br = null;
         FileReader fr = null;
         try {
@@ -59,6 +62,15 @@ public class SeqReader {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public void initMap(String filename){
+        /**
+         * Average Sequence with 400 Proteins.
+         * 250 as estimate with air to top :)
+         */
+        File file = new File(filename);
+        seqMap = new HashMap<String, Protein>((int) (file.length()/250));
     }
 
     public int sizeOf(String protName){
