@@ -48,4 +48,10 @@ public class Protein {
     public String getSeq() {
         return seq;
     }
+
+    public String getProteinAsFasta(){
+        String parsedStr = seq.replaceAll("(.{80})", "$1\n");
+        String fastaProtein = ">" + name + "\n" + parsedStr;
+        return fastaProtein;
+    }
 }

@@ -6,8 +6,10 @@ import java.util.Map;
  * Created by students on 09.05.17.
  */
 public class NCBI_Detection {
+    public boolean useSequences = false;
+    public int SIZE_OF_QUERY = 4000;
     SeqReader sequences;
-    String[] proteinList = new String[4000];
+    String[] proteinList = new String[SIZE_OF_QUERY];
     int set = 0;
     Thread[] threads = new Thread[8];
 
@@ -15,11 +17,15 @@ public class NCBI_Detection {
         if(args.length > 0){
             NCBI_Detection ncbi_detection = new NCBI_Detection(new SeqReader(args[0]));
             if(args.length > 1){
-                ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
+                if(args.length == 2 && args[1].contains("-s")){
+                    ncbi_detection.setUseSequences();
+                } else {
+                    ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
+                }
             }
             ncbi_detection.start();
         } else {
-            System.err.println("Argument 1: Input Sequence File\nOptional Argument Number of threads (std=8)");
+            System.err.println("Argument 1: Input Sequence File\nOptional Argument Number of threads (std=8)\nOr -s to include sequences");
         }
     }
 
@@ -37,15 +43,18 @@ public class NCBI_Detection {
         int i = 0;
         set = 0;
         for (String protein : proteinMap.keySet()) {
-            if(i < 3999){
+            if(i < SIZE_OF_QUERY-1){
                 proteinList[i] = protein;
+                if(useSequences){
+                    proteinList[i] = sequences.get(protein).getProteinAsFasta();
+                }
                 i++;
             } else {
                 i = 0;
                 String name = "proteinSet_" + set;
                 Writer writer = new Writer(name);
                 writer.writeAllLines(proteinList);
-                proteinList = new String[4000];
+                proteinList = new String[SIZE_OF_QUERY];
                 set++;
             }
         }
@@ -65,7 +74,7 @@ public class NCBI_Detection {
                     System.err.println("Thread started...");
                     z++;
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -77,7 +86,7 @@ public class NCBI_Detection {
             if(threads[i] != null && threads[i].isAlive()){
                 i = 0;
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -114,12 +123,20 @@ public class NCBI_Detection {
 
                     pr.getInputStream();
                     BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                    if((line = in.readLine()) != null){
+                        if(line.contains("failed")){
+                            System.out.println("Search " + i + " failed!");
+                        } else {
+                            writer.writeLine(line);
+                        }
+                    } else {
+                        System.out.println("ok!");
+                    }
                     while ((line = in.readLine()) != null) {
                         writer.writeLine(line);
                     }
                     writer.flush();
                     pr.waitFor();
-                    System.out.println("ok!");
                     in.close();
                     writer.close();
                 } catch (InterruptedException e) {
@@ -131,5 +148,11 @@ public class NCBI_Detection {
             }
         });
         return thread;
+    }
+
+    public void setUseSequences() {
+        this.useSequences = true;
+        this.SIZE_OF_QUERY = 10;
+        this.proteinList = new String[SIZE_OF_QUERY];
     }
 }
