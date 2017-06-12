@@ -86,8 +86,8 @@ public class CDComparator {
              * FILTER STEP 10
              */
             try {
-                if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 1000){
-                    writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name());
+                if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 100000){
+                    writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name() + " " + domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()));
                     return false;
                 }
             } catch (NullPointerException ex){
@@ -171,7 +171,12 @@ public class CDComparator {
         initDomainMap(list);
         for (ConservedDomain domain : list) {
             for(int i = domain.getStart(); i <= domain.getEnd(); i++){
-                domainsPerPosition.get(i).add(domain);
+                try{
+                    domainsPerPosition.get(i).add(domain);
+                } catch (IndexOutOfBoundsException ex) {
+                    System.err.println("Domain List incomplete!");
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -211,13 +216,13 @@ public class CDComparator {
     public void initDomainMap(List<ConservedDomain> list){
         ConservedDomain conservedDomain = list.get(0);
         String name = conservedDomain.getProteinName();
-        Protein protein = proteinSequences.get(name);
         int length = 0;
         try {
+            Protein protein = proteinSequences.get(name);
             length = protein.getLength();
         } catch (NullPointerException ex ){
-            ex.printStackTrace();
-            System.err.println(name);
+            //ex.printStackTrace();
+            System.err.println(name + " not found!");
         }
         for (int i = 0; i <= length; i++){
             domainsPerPosition.add(new ArrayList<ConservedDomain>());

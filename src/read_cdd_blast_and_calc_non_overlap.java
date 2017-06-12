@@ -36,13 +36,13 @@ public class read_cdd_blast_and_calc_non_overlap {
             ElapsedTimer timer = new ElapsedTimer();
             System.err.println("Detect Reader...");
             CDDetectReader cdReader = new CDDetectReader();
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             System.err.println("Protein sequence Reader...");
             cdReader.setProteinSequences(args[3]); // SEQUENCES OF PROTEINS in fasta format
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             System.err.println("Set FullGeneCD...");
             cdReader.setFullGeneCD(args[1]); // FULL GENE CD FILE - JUST NAMES OF FULL GENE CDs
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             System.err.println("Seq Reader...");
             /**
              * Wenn die CD Sequenzen eingelesen werden, gibt es keine Sequenzen für die Cluster
@@ -50,17 +50,17 @@ public class read_cdd_blast_and_calc_non_overlap {
              * und der Sequenzdatei angehängt (Wird dies nicht vorgenommen, hat man in der Regel einen besseren fit...)
              */
             cdReader.setSeqReader(args[2]); // SEQUENCES OF CDs in fasta format
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             System.err.println("InitCDDetectReader...");
             cdReader.initCDDetectReader(args[0]); // CDs detected by bwrps.pl
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             System.err.println("Calc Overlap...");
             /**
              * Die Angabe mit 600 aa Residuen ist im Paper Falsch und meint Nukleotide... Daher wird als Schwellenwert 200 aa (also 600/3 angenommen)
              */
             cdReader.removeSmallSequences(200); /** FILTER STEP 6 **/
             cdReader.calc_overlap(true);
-            //timer.elapsedFromLastStamp();
+            timer.elapsedFromLastStampIfSignificant();
             timer.elapsedFromStart();
         }
         else {

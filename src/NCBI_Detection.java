@@ -17,8 +17,11 @@ public class NCBI_Detection {
         if(args.length > 0){
             NCBI_Detection ncbi_detection = new NCBI_Detection(new SeqReader(args[0]));
             if(args.length > 1){
-                if(args.length == 2 && args[1].contains("-s")){
+                if(args.length == 2 && args[1].contains("-seq")){
                     ncbi_detection.setUseSequences();
+                } else if(args.length == 2 && args[1].contains("-single")){
+                    System.err.println("Use Single Seq");
+                    ncbi_detection.setSingleSeq();
                 } else {
                     ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
                 }
@@ -54,6 +57,7 @@ public class NCBI_Detection {
                 String name = "proteinSet_" + set;
                 Writer writer = new Writer(name);
                 writer.writeAllLines(proteinList);
+                writer.close();
                 proteinList = new String[SIZE_OF_QUERY];
                 set++;
             }
@@ -61,6 +65,7 @@ public class NCBI_Detection {
         String name = "proteinSet_" + set;
         Writer writer = new Writer(name);
         writer.writeAllLines(proteinList);
+        writer.close();
         startAll();
     }
 
@@ -153,6 +158,11 @@ public class NCBI_Detection {
     public void setUseSequences() {
         this.useSequences = true;
         this.SIZE_OF_QUERY = 10;
+        this.proteinList = new String[SIZE_OF_QUERY];
+    }
+
+    public void setSingleSeq(){
+        this.SIZE_OF_QUERY = 2;
         this.proteinList = new String[SIZE_OF_QUERY];
     }
 }
