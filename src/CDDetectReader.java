@@ -13,7 +13,7 @@ import java.util.Map;
 public class CDDetectReader {
     Map<String, List<ConservedDomain>> CDMap = new HashMap<String, List<ConservedDomain>>(10000000);
     SeqReader seqReader;
-    Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(1000);
+    Map<String, Boolean> fullGeneCD = new HashMap<String, Boolean>(65000);
     CDComparator cdComparator = new CDComparator();
     Writer writer = new Writer("CDDetectReader.output");
     Writer writerFullGene = new Writer("NoFullGeneDomain.output");
