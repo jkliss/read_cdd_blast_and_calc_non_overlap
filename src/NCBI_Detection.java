@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -100,7 +99,7 @@ public class NCBI_Detection {
     }
 
     public Thread scheduler(final int i){
-        Thread thread = new Thread(new Thread() {
+        final Thread thread = new Thread(new Thread() {
             public void run() {
                 try{
                     System.out.println("Protein Set " + i + " started.");
@@ -130,7 +129,9 @@ public class NCBI_Detection {
                     BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
                     if((line = in.readLine()) != null){
                         if(line.contains("failed")){
-                            System.out.println("Search " + i + " failed!");
+                            System.out.println("Search " + i + " failed! -- Retry");
+                            Thread.sleep(1000000);
+                            scheduler(i);
                         } else {
                             writer.writeLine(line);
                         }
