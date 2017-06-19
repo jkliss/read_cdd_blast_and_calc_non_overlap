@@ -37,6 +37,7 @@ public class ReformatLocalRPSBLAST {
                             String cd_name = translator.get(cd_number);
                             // LINE NOCH ANPASSEN AN WEB OUTPUT
                             String printLine = split[0] + "\tlocal_non_spec\t" + cd_number + "\t" + split[6] + "\t" + split[7] + "\t" + split[10] + "\t" + split[2] + "\t" + cd_name;
+                            writer.writeLine(printLine);
                         } catch (NullPointerException ex){
                             System.err.println(cd_number +  " translation not found!");
                         }
