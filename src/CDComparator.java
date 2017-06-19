@@ -11,6 +11,7 @@ public class CDComparator {
     List<List<ConservedDomain>> domainsPerPosition;
     Writer writer = new Writer("CDComparator.output");
     DomainCounter domainCounter;
+    Writer notFoundErrorFile = new Writer("CDProteinSequencesMissing.out");
 
     public boolean calculateNonOverlaps(List<ConservedDomain> list){
         if(cd_seqs==null){
@@ -59,6 +60,7 @@ public class CDComparator {
             writer.writeLine("No non Overlapping Full Gene Sets for: " + list.get(0).getProteinName());
         }
         writer.flush();
+        notFoundErrorFile.flush();
         return fnd;
     }
 
@@ -86,7 +88,7 @@ public class CDComparator {
              * FILTER STEP 10
              */
             try {
-                if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 100000){
+                if(domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()) > 10000000){
                     writer.writeLine("Promiscuous Domain " + domain1.getProteinName() + " " + domain1.getCd_name() + " " + domain2.getCd_name() + " " + domainCounter.getCountCombination(domain1.getCd_name(), domain2.getCd_name()));
                     return false;
                 }
@@ -115,6 +117,7 @@ public class CDComparator {
             }
         } catch (NullPointerException ex){
             ex.fillInStackTrace();
+            notFoundErrorFile.writeLine("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.getProteinName() + "-" + domain1.cd_name + "#" + domain2.cd_name);
             if((!ClusterDomainErrorSuppress) && (!domain1.cd_name.contains("cl") && (!domain2.cd_name.contains("cl")))){
                 System.err.println("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.cd_name + "#" + domain2.cd_name);
                 writer.writeLine("CD PROTEIN SEQUENCE NOT AVAILABLE: " + domain1.getProteinName() + "-" + domain1.cd_name + "#" + domain2.cd_name);

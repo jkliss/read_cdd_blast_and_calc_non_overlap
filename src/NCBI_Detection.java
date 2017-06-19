@@ -20,7 +20,7 @@ public class NCBI_Detection {
                 if(args.length == 2 && args[1].contains("-seq")){
                     ncbi_detection.setUseSequences();
                 } else if(args.length == 2 && args[1].contains("-single")){
-                    System.err.println("Use Single Seq");
+                    System.out.println("Use Single...");
                     ncbi_detection.setSingleSeq();
                 } else {
                     ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
@@ -28,7 +28,7 @@ public class NCBI_Detection {
             }
             ncbi_detection.start();
         } else {
-            System.err.println("Argument 1: Input Sequence File\nOptional Argument Number of threads (std=8)\nOr -s to include sequences");
+            System.err.println("Argument 1: Input Sequence File\nOptional Argument Number of threads (std=8)\nOr -seq to include sequences");
         }
     }
 
@@ -76,10 +76,10 @@ public class NCBI_Detection {
                     //System.err.println("Thread " + z);
                     threads[i] = scheduler(z);
                     threads[i].start();
-                    System.err.println("Thread started...");
+                    System.out.println("Thread started...");
                     z++;
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -91,7 +91,7 @@ public class NCBI_Detection {
             if(threads[i] != null && threads[i].isAlive()){
                 i = 0;
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -103,7 +103,7 @@ public class NCBI_Detection {
         Thread thread = new Thread(new Thread() {
             public void run() {
                 try{
-                    System.err.println("Protein Set " + i + " started.");
+                    System.out.println("Protein Set " + i + " started.");
                     //ProcessBuilder ps=new ProcessBuilder("./mod_bwrpsd.pl", "< proteinSet_" + i, "1> proteinSet_" + i + ".out", "2> proteinSet_" + i + ".err");
                     ProcessBuilder ps = new ProcessBuilder("./mod_bwrpsd.pl");
                     //ProcessBuilder ps = new ProcessBuilder("echo");
@@ -149,7 +149,7 @@ public class NCBI_Detection {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.err.println("Protein Set " + i + " ended");
+                System.out.println("Protein Set " + i + " ended");
             }
         });
         return thread;
