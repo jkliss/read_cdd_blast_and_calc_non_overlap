@@ -32,21 +32,27 @@ public class CDDetectReader {
             br = new BufferedReader(new FileReader(filename));
             while ((sCurrentLine = br.readLine()) != null) {
                 List<ConservedDomain> currentList = new ArrayList<ConservedDomain>();
-                String[] splits = sCurrentLine.split("\t");
+                String[] splits = sCurrentLine.split("\\s+");
                 try {
                     if (CDMap.get(splits[0]) != null) {
                         currentList = CDMap.get(splits[0]);
                     }
-                    ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
-                    currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
-                    /**
-                     * FILTER STEP 3
-                     */
-                    if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
-                        currentList.add(currentDomain);
-                        CDMap.put(currentDomain.getProteinName(), currentList);
-                    } else {
-                        writerFullGene.writeLine(currentDomain.getProteinName() + " - " + currentDomain.getCd_name());
+                    try{
+                        ConservedDomain currentDomain = new ConservedDomain(splits[0], splits[7]);
+                        currentDomain.setStartAndEnd(Integer.parseInt(splits[3]), Integer.parseInt(splits[4]));
+                        /**
+                         * FILTER STEP 3
+                         */
+                        if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
+                            currentList.add(currentDomain);
+                            CDMap.put(currentDomain.getProteinName(), currentList);
+                        } else {
+                            writerFullGene.writeLine(currentDomain.getProteinName() + " - " + currentDomain.getCd_name());
+                        }
+                    } catch (IndexOutOfBoundsException ex){
+                        ex.printStackTrace();
+                        System.err.println(currentList.toString());
+                        System.err.println("LINE:" + sCurrentLine);
                     }
                 } catch (IllegalStateException ex){
                     ex.printStackTrace();

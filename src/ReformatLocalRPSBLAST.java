@@ -9,6 +9,7 @@ import java.util.HashMap;
  */
 public class ReformatLocalRPSBLAST {
     HashMap<String, String> translator = new HashMap<String, String>(1000000);
+    HashMap<String, String> translatorShort = new HashMap<String, String>(1000000);
 
     public static void main(String[] args) {
         ReformatLocalRPSBLAST reformatLocalRPSBLAST = new ReformatLocalRPSBLAST();
@@ -35,11 +36,13 @@ public class ReformatLocalRPSBLAST {
                         String cd_number = split[1].replace("CDD:", "");
                         try {
                             String cd_name = translator.get(cd_number);
+                            String cd_short = translatorShort.get(cd_number);
                             // LINE NOCH ANPASSEN AN WEB OUTPUT
-                            String printLine = split[0] + "\tlocal_non_spec\t" + cd_number + "\t" + split[6] + "\t" + split[7] + "\t" + split[10] + "\t" + split[2] + "\t" + cd_name;
+                            String printLine = split[0] + "\tlocal_non_spec\t" + cd_number + "\t" + split[6] + "\t" + split[7] + "\t" + split[10] + "\t" + split[2] + "\t" + cd_name + "\t" + cd_short;
                             writer.writeLine(printLine);
                         } catch (NullPointerException ex){
                             System.err.println(cd_number +  " translation not found!");
+                            System.out.println(cd_number + " translation not found!");
                         }
                     }
                 }
@@ -55,6 +58,7 @@ public class ReformatLocalRPSBLAST {
                     ex.printStackTrace();
                 }
             }
+            writer.flush();
         }
     }
 
@@ -73,6 +77,7 @@ public class ReformatLocalRPSBLAST {
                 while ((sCurrentLine = br.readLine()) != null) {
                     String[] split = sCurrentLine.split("\t");
                     translator.put(split[0], split[1]);
+                    translatorShort.put(split[0], split[2]);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
