@@ -29,6 +29,13 @@ public class ElapsedTimer {
         return timeStr;
     }
 
+    public String secondsElapsedFromStart(){
+        long time = System.nanoTime();
+        long elapsed = time - this.startTime;
+        double seconds = (double) elapsed/1000000000;
+        return Double.toString(seconds);
+    }
+
     public String elapsedFromLastStampIfSignificant(){
         long time = System.nanoTime();
         long elapsed = time - this.time;

@@ -11,21 +11,27 @@ public class NCBI_Detection {
     String[] proteinList = new String[SIZE_OF_QUERY];
     int set = 0;
     Thread[] threads = new Thread[8];
+    final Writer singleWrite = new Writer("CDD_SingleSeqWrite.out");
 
     public static void main(String[] args) {
+        boolean normalStart = true;
         if(args.length > 0){
             NCBI_Detection ncbi_detection = new NCBI_Detection(new SeqReader(args[0]));
             if(args.length > 1){
-                if(args.length == 2 && args[1].contains("-seq")){
+                if(args.length == 2 && args[1].equals("-seq")){
                     ncbi_detection.setUseSequences();
-                } else if(args.length == 2 && args[1].contains("-single")){
+                } else if(args.length == 2 && args[1].equals("-single")){
                     System.out.println("Use Single...");
                     ncbi_detection.setSingleSeq();
+                    ncbi_detection.startAllSingle();
+                    normalStart = false;
                 } else {
                     ncbi_detection = new NCBI_Detection(new SeqReader(args[0]), Integer.parseInt(args[1]));
                 }
             }
-            ncbi_detection.start();
+            if(normalStart){
+                ncbi_detection.start();
+            }
         } else {
             System.err.println("Argument 1: Input Sequence File\nOptional Argument Number of threads (std=8)\nOr -seq to include sequences");
         }
@@ -151,6 +157,88 @@ public class NCBI_Detection {
                     e.printStackTrace();
                 }
                 System.out.println("Protein Set " + i + " ended");
+            }
+        });
+        return thread;
+    }
+
+    public void startAllSingle(){
+        Map<String, Protein> sequencesSeqMap = sequences.getSeqMap();
+        for (Protein protein : sequencesSeqMap.values()) {
+            for(int i = 0; i < threads.length; i++){
+                if(threads[i] == null || !threads[i].isAlive()){
+                    //System.err.println("Thread " + z);
+                    threads[i] = scheduler(protein);
+                    threads[i].start();
+                    System.out.println("Thread started...");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < threads.length; i++){
+            if(threads[i] != null && threads[i].isAlive()){
+                i = 0;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public Thread scheduler(final Protein protein){
+        final Thread thread = new Thread(new Thread() {
+            public void run() {
+                ElapsedTimer elapsedTimer = new ElapsedTimer();
+                try{
+                    System.out.println("Protein " + protein.getName() + " started.");
+                    //ProcessBuilder ps=new ProcessBuilder("./mod_bwrpsd.pl", "< proteinSet_" + i, "1> proteinSet_" + i + ".out", "2> proteinSet_" + i + ".err");
+                    ProcessBuilder ps = new ProcessBuilder("./mod_bwrpsd.pl");
+                    //ProcessBuilder ps = new ProcessBuilder("echo");
+                    /**From the DOC:  Initially, this property is false, meaning that the
+                     //standard output and error output of a subprocess are sent to two
+                     separate streams **/
+                    ps.redirectErrorStream(true);
+                    Process pr = null;
+                    pr = ps.start();
+                    OutputStream stdin = pr.getOutputStream();
+                    BufferedWriter stdin_writer = new BufferedWriter(new OutputStreamWriter(stdin));
+                    String line = protein.getName();
+                    stdin_writer.write(line);
+                    stdin_writer.newLine();
+                    stdin_writer.flush();
+                    stdin_writer.close();
+                    pr.getInputStream();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                    if((line = in.readLine()) != null){
+                        if(line.contains("failed")){
+                            System.out.println("Search " + protein.getName() + " failed! -- Retry");
+                            Thread.sleep(1000000);
+                            scheduler(protein);
+                        } else {
+                            singleWrite.writeLine(line);
+                        }
+                    } else {
+                        System.out.println("ok!");
+                    }
+                    while ((line = in.readLine()) != null) {
+                        singleWrite.writeLine(line);
+                    }
+                    singleWrite.flush();
+                    pr.waitFor();
+                    in.close();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Protein " + protein.getName() + " ended in " + elapsedTimer.secondsElapsedFromStart());
             }
         });
         return thread;

@@ -43,9 +43,11 @@ public class CDDetectReader {
                         /**
                          * FILTER STEP 3
                          */
-                        if (fullGeneCD.containsKey(splits[7]) && !currentDomain.isInList(currentList)){
-                            currentList.add(currentDomain);
-                            CDMap.put(currentDomain.getProteinName(), currentList);
+                        if (fullGeneCD.containsKey(currentDomain.getCd_name())){
+                            if(!currentDomain.isInList(currentList)) {
+                                currentList.add(currentDomain);
+                                CDMap.put(currentDomain.getProteinName(), currentList);
+                            }
                         } else {
                             writerFullGene.writeLine(currentDomain.getProteinName() + " - " + currentDomain.getCd_name());
                         }
