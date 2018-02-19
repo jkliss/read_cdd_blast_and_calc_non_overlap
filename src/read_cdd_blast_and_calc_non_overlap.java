@@ -47,7 +47,7 @@ public class read_cdd_blast_and_calc_non_overlap {
             /**
              * Wenn die CD Sequenzen eingelesen werden, gibt es keine Sequenzen für die Cluster
              * um auch Sequenzlängen für Cluster zu bekommen wurden eine Sequenz im Median aller der zum Cluster gehörenden Sequenzen generiert
-             * und der Sequenzdatei angehängt (Wird dies nicht vorgenommen, hat man in der Regel einen besseren fit...)
+             * und der Sequenzdatei angehängt
              */
             cdReader.setSeqReader(args[2]); // SEQUENCES OF CDs in fasta format
             timer.elapsedFromLastStampIfSignificant();
@@ -65,6 +65,10 @@ public class read_cdd_blast_and_calc_non_overlap {
         }
         else {
             System.err.println("No File!\nUse one Argument for BLAST output as Input\nUse Two Arguments for only CD File + Full Gene File\nUse Three Arguments for CD File + Fullgene Names + Fullgene Sequences(CD Length Comparison)");
+            System.err.println("\nCDD FILE\n" +
+                    "FULL GENE FILE\n" +
+                    "FASTA FILE CDD SEQUENCES WITH CLUSTERS FOR LENGTH\n" +
+                    "FASTA FILE OF ALL SEQUENCES");
         }
     }
 }
